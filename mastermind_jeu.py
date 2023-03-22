@@ -77,3 +77,4 @@ while blanc < num_cases:
     blanc = count(test_match)
     bleu = count(test_compare)
     print(blanc, bleu)
+    print("hello")
