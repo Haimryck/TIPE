@@ -14,28 +14,25 @@ def gen_code(size,color):  #generation de code de taille:"size" et de nombre de 
 
 def guess_check(secret_code,guess):
     good=0       #bien placé/mal placé
-    bad=0
-    a=0          #pour éviter les doublons
+    bad=0          
     newcode=secret_code.copy()
-    for i in range(0,len(secret_code)):
+    for i in range(len(secret_code)):
         if guess[i]==secret_code[i]:
             good +=1
             if newcode[i]==1:
                 bad -=1
                 for j in range(i+1,len(secret_code)):
-                    if guess[i]==newcode[j] and a==0:
+                    if guess[i]==newcode[j]:
                         bad +=1
-                        a=1
+                        break
                         newcode[j]=1
-                    a=0
             newcode[i]=0
         else:
-            for j in range(0,len(secret_code)):
-                if guess[i]==newcode[j] and a==0:
+            for j in range(len(secret_code)):
+                if guess[i]==newcode[j] :
                     bad +=1
-                    a=1
+                    break
                     newcode[j]=1
-            a=0
     return (good,bad)
 
 #print(guess_check(['H', 'E', 'G', 'E'],['E','E','G','G']))
