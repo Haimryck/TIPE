@@ -19,12 +19,12 @@ def guess_check(secret_code,guess):
     newcode=secret_code.copy()
     for i in range(0,len(secret_code)):
         if guess[i]==secret_code[i]:
-            good = good +1
+            good +=1
             if newcode[i]==1:
-                bad = bad -1
+                bad -=1
                 for j in range(i+1,len(secret_code)):
                     if guess[i]==newcode[j] and a==0:
-                        bad = bad +1
+                        bad +=1
                         a=1
                         newcode[j]=1
                     a=0
@@ -32,7 +32,7 @@ def guess_check(secret_code,guess):
         else:
             for j in range(0,len(secret_code)):
                 if guess[i]==newcode[j] and a==0:
-                    bad = bad +1
+                    bad +=1
                     a=1
                     newcode[j]=1
             a=0
@@ -111,7 +111,7 @@ def grosbg0(size,color):
     return grosbg(size,color,secret_code,all_code(color))
 
  
-def grosbg(size,color,secret_code,all_code): ###size pour first nn defini
+def grosbg(size,color,secret_code,all_code):
     L=all_code.copy()
     first=L[0]
     M=[]
