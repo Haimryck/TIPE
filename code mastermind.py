@@ -4,7 +4,7 @@ import numpy as np
 
 #creer un code, check la reponse, afficher les indices
 
-C=['A','B','C','D','E','F','G','H','I','J']
+C=['A','B','C','D','E','F','G','H','I','J','K','L']
 
 def gen_code(size,color):  #generation de code de taille:"size" et de nombre de couleurs:"color"
     L=[]
@@ -86,7 +86,7 @@ def all_code1(size,color,L):
     return L'''
 
 
-def efficacity_test_grosbg(size,color,List): ###pb de longueur des tours max
+def efficacity_test_grosbg(size,color,List):
     allcode=List(size,color)
     L=[0]*12
     for i in range(0,len(allcode)):
@@ -112,7 +112,7 @@ def grosbg0(size,color):
     return grosbg(secret_code,all_code(size,color))
 
 
-def grosbg(secret_code,all_code): ###size pour first nn defini
+def grosbg(secret_code,all_code):
     L=all_code.copy()
     first=L[0]
     M=[]
@@ -150,57 +150,174 @@ def tri_entropy(size,color):
     return [item for sublist in C for item in sublist]
 
 
+#########################################################
+'''Troisième programme de résulotion utilisant min/max'''
+#########################################################
+
+
+
+def min_max_ini(size,color):
+    allcode=all_code(size,color)
+    maxresp={}
+    respmax={}
+    a=0
+    for i in range(size+1):
+        for j in range(size-i+1):
+            if i!=size-1 or j!=1:
+                maxresp[(i,j)]=a
+                respmax[a]=(i,j)
+                a+=1
+    depth=0
+    joueur=True
+    position=1
+    return min_max(position,depth,joueur,allcode,maxresp)[0]
+
+def min_max(code,depth,joueur,allcode,maxresp):
+    if len(allcode)==1:
+        return [depth+1,allcode[0]]
+    elif len(allcode)==0:
+        return [0]
+
+    if joueur==False:
+        m=[0]
+        m.append(code)
+        Resp=[[] for i in range(len(maxresp))]
+        for i in range(len(allcode)):
+            Resp[maxresp[guess_check(allcode[i],code)]].append(allcode[i])
+        for j in range(len(Resp)-1):
+            m.append(min_max(None,depth,True,Resp[j],maxresp))
+        m.append([depth,code])
+        for j in range(2,len(m)):
+            if m[j][0]>m[0]:
+                m[0]=m[j][0]
+
+    elif joueur==True:
+        m=[np.inf]
+        for i in range(len(allcode)):
+            m.append(min_max(allcode[i],depth+1,False,allcode,maxresp))
+        for j in range(1,len(m)):
+            if m[j][0]<m[0]:
+                m[0]=m[j][0]
+    return m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ###########################################################
 '''Affichage des résultats des programmes dans un graphe'''
 ###########################################################
 
 
-cycle_color=('#FF0000','#EF00FF','#2B00FF','#00E6FF','#00FF2B','#FFFF00','#FF0000','#EF00FF','#2B00FF','#00E6FF','#00FF2B','#FFFF00')
+cycle_color=('#FF0000','#EF00FF','#2B00FF','#00E6FF','#00FF2B','#FFFF00','#B0D0D3','#C08497','#F7AF9D','#000000')
 
-def affichage_color_simple():
+def affichage_color_simple(size,color_max):
     x=[i for i in range(1,13)]
     lab=[]
-    for i in range(1,7):
-        result=efficacity_test_grosbg(4,i,all_code)
+    for i in range(1,color_max+1):
+        result=efficacity_test_grosbg(size,i,all_code)
         lab.append(str(i)+" colors code, moy: "+str(round(result[-1],2)))
         plt.plot(x,np.array(result[0])/result[1]*100,color=cycle_color[i-1],marker='+')
         plt.legend(lab)
     plt.xlabel('Number of guesses')
     plt.ylabel('%')
-    plt.title('simple strategy')
+    plt.title('simple strategy for a size of '+str(size))
     plt.show()
     return None
 
-def affichage_color_entropy():
+def affichage_color_entropy(size,color_max):
     x=[i for i in range(1,13)]
     lab=[]
-    for i in range(1,11):
-        result=efficacity_test_grosbg(4,i,tri_entropy)
+    for i in range(1,color_max+1):
+        result*=efficacity_test_grosbg(size,i,tri_entropy)
         lab.append(str(i)+" colors code, moy: "+str(round(result[-1],2)))
         plt.plot(x,np.array(result[0])/result[1]*100,color=cycle_color[i-1],marker='+')
         plt.legend(lab)
     plt.xlabel('Number of guesses')
     plt.ylabel('%')
-    plt.title('entropy strategy')
+    plt.title('entropy strategy for a size of '+str(size))
     plt.show()
     return None
 
+
+
+def affichage_size_simple(color,size_max):
+    x=[i for i in range(1,13)]
+    lab=[]
+    for i in range(1,size_max+1):
+        result=efficacity_test_grosbg(i,color,all_code)
+        lab.append(str(i)+" size code, moy: "+str(round(result[-1],2)))
+        plt.plot(x,np.array(result[0])/result[1]*100,color=cycle_color[i-1],marker='+')
+        plt.legend(lab)
+    plt.xlabel('Number of guesses')
+    plt.ylabel('%')
+    plt.title('simple strategy for '+str(color)+' colors')
+    plt.show()
+    return None
+
+def affichage_size_entropy(color,size_max):
+    x=[i for i in range(1,13)]
+    lab=[]
+    for i in range(1,size_max+1):
+        result=efficacity_test_grosbg(i,color,tri_entropy)
+        lab.append(str(i)+" size code, moy: "+str(round(result[-1],2)))
+        plt.plot(x,np.array(result[0])/result[1]*100,color=cycle_color[i-1],marker='+')
+        plt.legend(lab)
+    plt.xlabel('Number of guesses')
+    plt.ylabel('%')
+    plt.title('entropy strategy for '+str(color)+' colors')
+    plt.show()
+    return None
+
+############################################################
+'''Nouveau all_code qui prend en compte la taille du code'''
+############################################################
 
 def all_code(size,color):
     m=[[] for i in range(color**size)]
-    return new_all_code(size,color,m)
+    size0=size
+    return new_all_code(size,color,m,size0)
 
-def new_all_code(size,color,m):
+def new_all_code(size,color,m,size0):
+    if size<=0:
+        return m
     a=0
     n=len(m)
-    b=n//size
+    diff=n//(color**(size0-size+1))
+    b=diff
     while a<n:
         for i in range(color):
             for j in range(a,b):
                 m[j].append(C[i])
-        a,b=b,b+a
-    return new_all_code(size-1,color,m)
+            a,b=b,b+diff
+    return new_all_code(size-1,color,m,size0)
 
 
 
